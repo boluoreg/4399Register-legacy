@@ -2,7 +2,6 @@
 from requests import get, post
 from random import sample, choice
 from ddddocr import DdddOcr
-from datetime import datetime
 from time import time
 from string import ascii_letters, digits, ascii_lowercase
 from logging import getLogger, StreamHandler, Formatter, INFO
@@ -34,9 +33,6 @@ with open("sfz.txt", 'r', encoding='utf-8') as f:
 
 def randstr(chars, length):
     return ''.join(sample(chars, length))
-
-def time_is():
-    return datetime.now().strftime("[%H:%M:%S]")
 
 def time_how(start):
     return f"{(time() - start):.2f}"
