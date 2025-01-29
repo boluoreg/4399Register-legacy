@@ -1,3 +1,6 @@
+
+# 虽然相较于CookieGenerator有了不少优化，但是似乎暂时无法使用，请不要投入生产！如果你可以修复它或者优化它的代码逻辑，请提交PR。
+
 from datetime import datetime
 from requests import get, post
 from json import dumps
