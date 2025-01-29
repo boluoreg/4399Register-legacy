@@ -1,5 +1,6 @@
 
 # 虽然相较于CookieGenerator有了不少优化，但是似乎暂时无法使用，请不要投入生产！如果你可以修复它或者优化它的代码逻辑，请提交PR。
+# 这是一个库，并不能直接使用。
 
 from datetime import datetime
 from requests import get, post
@@ -17,9 +18,6 @@ headers = {
 
 ocr = DdddOcr(use_gpu=True, show_ad=False, import_onnx_path="4399ocr/4399ocr.onnx", charsets_path="4399ocr/4399ocr.json")
 
-def getime():
-    return datetime.now().strftime("%H:%M:%S")
-
 def generate_uuid():
     return str(uuid4()).replace("-", "").upper()
 
@@ -30,8 +28,7 @@ def check_verify_code(username):
     return (match.group(0).split("=")[1], f"http://ptlogin.4399.com{match.group(0)}") if match else ("", "")
 
 def process_captcha(captcha_url):
-    print("⚠️ 需要人工验证！请打开以下链接查看验证码：")
-    print(f"验证码地址: {captcha_url}")
+    print("需要验证")
     captcha_image = get(captcha_url, proxies=proxies, headers=headers).content
     while True:
         captcha = ocr.classification(captcha_image)
@@ -78,8 +75,7 @@ def login(username, password, verifycode="", verifysession=""):
         raise Exception(f"用户信息获取失败，错误代码：{user_info.get('code')}，信息：{user_info.get('msg')}")
     return {k: v for k, v in (item.split('=') for item in user_info['data']['sdk_login_data'].split('&'))}
 
-def dologin(username, password):
-    """执行登录并返回结果"""
+def get_cookie(username, password):
     try:
         print("检测验证码")
         session_id, captcha_url = check_verify_code(username)
