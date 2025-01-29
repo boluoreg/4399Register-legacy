@@ -8,8 +8,8 @@ from uuid import uuid4
 from re import search
 from ddddocr import DdddOcr
 
-proxies = {'https': 'http://127.0.0.1:8089',
-           'http': 'http://127.0.0.1:8089'}
+#proxies = {'https': 'http://127.0.0.1:8089', 'http': 'http://127.0.0.1:8089'}
+proxies = {}
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36'
