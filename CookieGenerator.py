@@ -1,5 +1,5 @@
 
-# 当前版本还有许多问题，待优化！请不要将当前版本投入生产使用！
+# 不推荐使用！推荐使用CookieTransfer！
 
 import os
 import requests
