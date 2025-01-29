@@ -39,8 +39,6 @@
 
 [Mengke15](https://github.com/Mengke15)：提供本项目一些函数，项目吉祥物
 
-[zszfympx](https://github.com/zszfympx)：多线程领域糕手
-
 ### 免责声明
 
 本项目所用到的所有信息均使用[百度](https://www.baidu.com)等搜索引擎收集，如果侵犯到您的权益请联系我们删除。
