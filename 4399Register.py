@@ -20,7 +20,7 @@ log = getLogger()
 log.setLevel(INFO)
 console_handler = StreamHandler()
 console_handler.setLevel(INFO)
-formatter = Formatter('[%(asctime)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+formatter = Formatter('[%(asctime)s %(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 console_handler.setFormatter(formatter)
 log.addHandler(console_handler)
 
@@ -130,7 +130,7 @@ def main():
             result = register_4399(usr, pwd)
             log.info(f"({current_thread().name}) 总耗时 {time_how(start)}s {result}")
         except Exception as e:
-            print(e)
+            log.warning(f"({current_thread().name}) {e}")
 
 if __name__ == "__main__":
     num_threads = 100
