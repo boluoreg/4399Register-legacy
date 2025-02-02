@@ -5,6 +5,7 @@ from ddddocr import DdddOcr
 from time import time
 from string import ascii_letters, digits, ascii_lowercase
 from logging import getLogger, StreamHandler, Formatter, INFO
+from threading import Thread, current_thread
 
 strings = ascii_letters + digits
 captcha_strings = ascii_lowercase + digits
@@ -19,7 +20,7 @@ log = getLogger()
 log.setLevel(INFO)
 console_handler = StreamHandler()
 console_handler.setLevel(INFO)
-formatter = Formatter('[%(asctime)s %(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+formatter = Formatter('[%(asctime)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 console_handler.setFormatter(formatter)
 log.addHandler(console_handler)
 
@@ -42,7 +43,7 @@ def register_4399(usr, pwd):
     sfz = choice(lines).strip()
     sfz_split = sfz.split(':')
 
-    log.info(f" 菠萝证 {sfz}")
+    log.info(f"({current_thread().name}) 菠萝证 {sfz}")
 
     sessionId = 'captchaReq' + randstr(captcha_strings, 19)
     captcha_response = get(
@@ -52,7 +53,7 @@ def register_4399(usr, pwd):
         verify=False
     ).content
     captcha = ocr.classification(captcha_response)
-    log.info(f" 菠萝码识别 {captcha}")
+    log.info(f"({current_thread().name}) 菠萝码识别 {captcha}")
 
     data = {
         'postLoginHandler': 'default',
@@ -112,22 +113,33 @@ def register_4399(usr, pwd):
         result = "未知的菠萝"
 
     if '验证码错误' in response:
-        log.info(f" 耗时 {time_how(start)}s 菠萝码错误")
+        log.info(f"({current_thread().name}) 耗时 {time_how(start)}s 菠萝码错误")
         result = register_4399(usr, pwd)
     else:
-        log.info(f" 耗时 {time_how(start)}s {result}")
+        log.info(f"({current_thread().name}) 耗时 {time_how(start)}s {result}")
 
     return result
 
-
-if __name__ == "__main__":
+def main():
     while True:
         try:
             start = time()
             usr = "S" + randstr(strings, 3) + "K" + randstr(strings, 3) + "Y" + randstr(strings, 3)
             pwd = randstr(strings, 12)
-            log.info(f"🍍 尝试生产菠萝 {usr}:{pwd}")
+            log.info(f"({current_thread().name}) 🍍 尝试生产菠萝 {usr}:{pwd}")
             result = register_4399(usr, pwd)
-            log.info(f" 总耗时 {time_how(start)}s {result}")
+            log.info(f"({current_thread().name}) 总耗时 {time_how(start)}s {result}")
         except Exception as e:
             print(e)
+
+if __name__ == "__main__":
+    num_threads = 100
+    threads = []
+
+    for i in range(num_threads):
+        thread = Thread(target=main, name=f"{i+1}")
+        threads.append(thread)
+        thread.start()
+
+    for thread in threads:
+        thread.join()
