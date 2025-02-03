@@ -97,7 +97,7 @@ def register_4399(usr, pwd):
     ).text
 
     if '注册成功' in response:
-        result = '菠萝成功'
+        result = '生产成功'
         with open('accounts.txt', 'a') as f:
             f.write(f'{usr}:{pwd}\n')
             f.close()
@@ -108,7 +108,7 @@ def register_4399(usr, pwd):
     elif '该姓名身份证提交验证过于频繁' in response:
         result = '该菠萝人的菠萝证种植过于频繁'
     elif '用户名已被注册' in response:
-        result = '菠萝已被种植'
+        result = '该菠萝已被生产'
     else:
         result = "未知的菠萝"
 
