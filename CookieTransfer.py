@@ -74,7 +74,7 @@ def login(username, password, verifycode="", verifysession=""):
         raise Exception(f"用户信息获取失败，错误代码：{user_info.get('code')}，信息：{user_info.get('msg')}")
     return {k: v for k, v in (item.split('=') for item in user_info['data']['sdk_login_data'].split('&'))}
 
-def get_cookie(username, password):
+def do_login(username, password):
     try:
         print("检测验证码")
         session_id, captcha_url = check_verify_code(username)
