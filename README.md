@@ -46,3 +46,5 @@
 本项目所用到的所有信息均使用[百度](https://www.baidu.com)等搜索引擎收集，如果侵犯到您的权益请联系我们删除。
 
 本程序仅供学习交流使用，使用本程序造成的任何后果及不良影响都与开发团队无关，由使用者承担！
+
+![Star History Chart](https://api.star-history.com/svg?repos=boluoreg/4399Register-legacy)
