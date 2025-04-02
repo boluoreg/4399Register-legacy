@@ -38,7 +38,7 @@ def randstr(chars, length):
 def time_how(start):
     return f"{(time() - start):.2f}"
 
-def register_4399(usr, pwd):
+def register_4399(usr, pwd, count=1):
     start = time()
     sfz = choice(lines).strip()
     sfz_split = sfz.split(':')
@@ -99,7 +99,10 @@ def register_4399(usr, pwd):
             f.write(f'{usr}:{pwd}\n')
             f.close()
     elif '验证码错误' in response:
-        result = register_4399(usr, pwd)
+        if count >= 3:
+            result = "菠萝码超时"
+        else:
+            result = register_4399(usr, pwd, count + 1)
     elif '身份证实名账号数量超过限制' in response:
         result = '菠萝证种植数量超过限制'
     elif '身份证实名过于频繁' in response:
