@@ -99,7 +99,7 @@ def register_4399(usr, pwd, count=1):
             f.write(f'{usr}:{pwd}\n')
             f.close()
     elif '验证码错误' in response:
-        if count >= 3:
+        if count >= 5:
             result = "菠萝码超时"
         else:
             result = register_4399(usr, pwd, count + 1)
