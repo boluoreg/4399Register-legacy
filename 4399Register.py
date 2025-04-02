@@ -43,8 +43,6 @@ def register_4399(usr, pwd):
     sfz = choice(lines).strip()
     sfz_split = sfz.split(':')
 
-    log.info(f"({current_thread().name}) 菠萝证 {sfz}")
-
     sessionId = 'captchaReq' + randstr(captcha_strings, 19)
     captcha_response = get(
         f'https://ptlogin.4399.com/ptlogin/captcha.do?captchaId={sessionId}',
@@ -53,7 +51,6 @@ def register_4399(usr, pwd):
         verify=False
     ).content
     captcha = ocr.classification(captcha_response)
-    log.info(f"({current_thread().name}) 菠萝码识别 {captcha}")
 
     data = {
         'postLoginHandler': 'default',
@@ -101,6 +98,8 @@ def register_4399(usr, pwd):
         with open('accounts.txt', 'a') as f:
             f.write(f'{usr}:{pwd}\n')
             f.close()
+    elif '验证码错误' in response:
+        result = register_4399(usr, pwd)
     elif '身份证实名账号数量超过限制' in response:
         result = '菠萝证种植数量超过限制'
     elif '身份证实名过于频繁' in response:
@@ -112,23 +111,16 @@ def register_4399(usr, pwd):
     else:
         result = "未知的菠萝"
 
-    if '验证码错误' in response:
-        log.info(f"({current_thread().name}) 耗时 {time_how(start)}s 菠萝码错误")
-        result = register_4399(usr, pwd)
-    else:
-        log.info(f"({current_thread().name}) 耗时 {time_how(start)}s {result}")
-
     return result
 
 def main():
     while True:
         try:
             start = time()
-            usr = "S" + randstr(strings, 3) + "K" + randstr(strings, 3) + "Y" + randstr(strings, 3)
+            usr = "Y" + randstr(strings, 3) + "K" + randstr(strings, 3) + "S" + randstr(strings, 3)
             pwd = randstr(strings, 12)
-            log.info(f"({current_thread().name}) 🍍 尝试生产菠萝 {usr}:{pwd}")
             result = register_4399(usr, pwd)
-            log.info(f"({current_thread().name}) 总耗时 {time_how(start)}s {result}")
+            log.info(f"({current_thread().name}) {usr} {time_how(start)}s {result}")
         except Exception as e:
             log.warning(f"({current_thread().name}) {e}")
 
@@ -137,7 +129,7 @@ if __name__ == "__main__":
     threads = []
 
     for i in range(num_threads):
-        thread = Thread(target=main, name=f"{i+1}")
+        thread = Thread(target=main, name=f"{i+1:03d}")
         threads.append(thread)
         thread.start()
 
