@@ -1,5 +1,5 @@
 # 4399Register-legacy
-### 非菠萝农场版本，但是此版本我们依旧在积极维护！无需复杂的搭建，上手可用。
+### 关注官方上游储存库[boluoreg/4399Register-legacy](https://github.com/boluoreg/4399Register-legacy)以获得最新功能、修复以及更多...
 
 ![logo_384x](https://github.com/user-attachments/assets/90ab389a-b270-426c-ae05-9000f761cd41)
 
