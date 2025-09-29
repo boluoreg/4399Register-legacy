@@ -6,7 +6,7 @@ from threading import Lock, Thread
 from time import sleep, time
 import keyboard
 from ddddocr import DdddOcr
-from requests import get, post
+import requests
 from rich.align import Align
 from rich.console import Console, Group
 from rich.layout import Layout
@@ -48,6 +48,7 @@ PROXY = os.getenv('PROXY')
 SFZ_FILE = os.getenv('SFZ_FILE')
 OCR_FOLDER = os.getenv('OCR_FOLDER')
 SYMBOL = os.getenv('SYMBOL')
+THREADS = os.getenv('THREADS')
 
 
 headers = {
@@ -84,7 +85,7 @@ def register_4399(usr, pwd, count=1):
         sfz_split = sfz.split(':')
 
         sessionId = 'captchaReq' + randstr(captcha_strings, 19)
-        captcha_response = get(
+        captcha_response = requests.get(
             f'https://ptlogin.4399.com/ptlogin/captcha.do?captchaId={sessionId}',
             headers=headers,
             proxies=proxies,
@@ -103,7 +104,7 @@ def register_4399(usr, pwd, count=1):
             'realname': sfz_split[0], 'idcard': sfz_split[1]
         }
 
-        response = post(
+        response = requests.post(
             'https://ptlogin.4399.com/ptlogin/register.do',
             data=data,
             proxies=proxies,
@@ -246,16 +247,11 @@ def generate_layout() -> Layout:
     return layout
 
 if __name__ == "__main__":
-    try:
-        import requests
-        from requests.packages.urllib3.exceptions import InsecureRequestWarning
-        requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-    except ImportError:
-        pass
+    requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
     
     keyboard.on_press_key("space", lambda _: toggle_pause())
 
-    num_threads = 32
+    num_threads = int(THREADS)
 
     for i in range(num_threads):
         thread = Thread(target=worker, daemon=True)
