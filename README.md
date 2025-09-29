@@ -1,9 +1,20 @@
 # 4399Register-legacy
-### 关注官方上游储存库[boluoreg/4399Register-legacy](https://github.com/boluoreg/4399Register-legacy)以获得最新功能、修复以及更多...
+
+**协议写的清清楚楚，某些倒卖🐕自己心安吗？🤣🤣**
+
+**是不是自己的劳动成果，自己心里清楚**
+
+**发现就挂人，自己好好考虑一下**
+
+更有神人连FreeCookie站都倒卖😅
 
 ![logo_384x](https://github.com/user-attachments/assets/90ab389a-b270-426c-ae05-9000f761cd41)
 
 基于Python的纯协议4399全自动账号注册脚本
+
+### What's new?
+
+**25/09/29**: 更新了dotenv、更好的TUI等功能，经核实，项目依旧可以正常使用
 
 ### 项目特色
 
@@ -17,34 +28,42 @@
 
 5. 唯一使用Python实现4399账号转Cookie功能的项目
 
+6. 更好的TUI，在终端下拥有良好的可视化
+
 ###  怎么用？
 
 1. 将项目克隆到本地
 
 2. 检查需要的依赖库，并安装好所有依赖
 
+3. 修改.env配置
+
 3. Enjoy :)
 
 ### 注意事项
 
-1. 单IP每小时仅可注册300个，建议使用代理IP；每个身份证仅可使用5次。
+1. 单IP每小时仅可注册300个，建议使用代理IP。
 
-2. 代理IP问题请自行解决，并不是不愿意分享解决方案，而是目前所谓的最优解决方案较为复杂，抽空可以做一个教程。
+2. 代理IP请自行解决。
 
 ### 贡献者（排名不分先后）
 
-[TianmuTNT](https://github.com/TianmuTNT)：项目主要发起者、开发者，代理IP解决方案提供者，4399验证码识别模型训练思路、预训练资源提供者，多线程维护者
+[TianmuTNT](https://github.com/TianmuTNT)：项目主要发起者、开发者，提供了多个解决方案
 
-[ImAlexBlock](https://github.com/ImAlexBlock)：4399验证码识别模型训练者，项目格式化贡献者，唯一正在使用该项目为用户免费提供账号的开发者（参见[此处](https://cookie.alexblock.org/)）
+[ImAlexBlock](https://github.com/ImAlexBlock)：贡献者，唯一正在使用该项目为用户免费提供账号的开发者（参见[此处](https://cookie.alexblock.org/)）
 
 [XNLawa](https://github.com/XNLawa)：转换Cookie模块的贡献者
 
 [Mengke15](https://github.com/Mengke15)：提供本项目一些函数，项目吉祥物
 
+### 关于协议
+
+本项目使用自定义协议[SKY License](./LICENSE)，使用本项目前必须仔细阅读并完全遵守该协议，否则请立即停止使用。
+
 ### 免责声明
 
 本项目所用到的所有信息均使用[百度](https://www.baidu.com)等搜索引擎收集，如果侵犯到您的权益请联系我们删除。
 
-本程序仅供学习交流使用，使用本程序造成的任何后果及不良影响都与开发团队无关，由使用者承担！
+本程序仅供学习交流使用，使用本程序造成的任何后果及不良影响均与开发团队无关，由使用者自行承担！
 
 ![Star History Chart](https://api.star-history.com/svg?repos=boluoreg/4399Register-legacy)
