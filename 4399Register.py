@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
-import ctypes
 from collections import Counter, deque
 from random import choice, sample
 from string import ascii_letters, ascii_lowercase, digits
 from threading import Lock, Thread
 from time import sleep, time
-
 import keyboard
 from ddddocr import DdddOcr
 from requests import get, post
@@ -19,7 +17,10 @@ from rich.rule import Rule
 from rich.table import Table
 from rich.text import Text
 import rich.box
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 
 stats = {
     'total': 0,
@@ -42,19 +43,27 @@ def toggle_pause():
 strings = ascii_letters + digits
 captcha_strings = ascii_lowercase + digits
 
+USER_AGENT = os.getenv('USER_AGENT')
+PROXY = os.getenv('PROXY')
+SFZ_FILE = os.getenv('SFZ_FILE')
+OCR_FOLDER = os.getenv('OCR_FOLDER')
+SYMBOL = os.getenv('SYMBOL')
+
+
 headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36'
+    'User-Agent': USER_AGENT
 }
 
 proxies = {
-    "http": "http://127.0.0.1:8089",
-    "https": "http://127.0.0.1:8089"
+    "http": PROXY,
+    "https": PROXY
 }
 
+
 try:
-    ocr = DdddOcr(use_gpu=True, show_ad=False, import_onnx_path="4399ocr/4399ocr.onnx",
-                  charsets_path="4399ocr/4399ocr.json")
-    with open("sfz.txt", 'r', encoding='utf-8') as f:
+    ocr = DdddOcr(use_gpu=True, show_ad=False, import_onnx_path=f"{OCR_FOLDER}/4399ocr.onnx",
+                  charsets_path=f"{OCR_FOLDER}/4399ocr.json")
+    with open(SFZ_FILE, 'r', encoding='utf-8') as f:
         lines = f.readlines()
 except FileNotFoundError as e:
     console.print(f"[bold red]错误: 缺少必要文件: {e.filename}，请确保它在程序目录下。[/bold red]")
@@ -133,7 +142,7 @@ def worker():
             sleep(0.5)
             continue
 
-        usr = "Y" + randstr(strings, 3) + "K" + randstr(strings, 3) + "S" + randstr(strings, 3)
+        usr = SYMBOL[0] + randstr(strings, 3) + SYMBOL[1] + randstr(strings, 3) + SYMBOL[2] + randstr(strings, 3)
         pwd = randstr(strings, 12)
         
         result = register_4399(usr, pwd)
@@ -169,7 +178,6 @@ def make_stats_panel() -> Panel:
         success_times = stats['success_times']
         success_rate = (success / total * 100) if total > 0 else 0
 
-        # 计算SPM
         current_time = time()
         while success_times and success_times[0] < current_time - 60:
             success_times.popleft()
@@ -248,7 +256,6 @@ if __name__ == "__main__":
     keyboard.on_press_key("space", lambda _: toggle_pause())
 
     num_threads = 32
-    ctypes.windll.kernel32.SetConsoleTitleW("Pineapple Register")
 
     for i in range(num_threads):
         thread = Thread(target=worker, daemon=True)
