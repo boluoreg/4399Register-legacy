@@ -16,7 +16,7 @@ from rich.progress import BarColumn, Progress, TextColumn
 from rich.rule import Rule
 from rich.table import Table
 from rich.text import Text
-import rich.box
+from rich.box import HEAVY, ROUNDED
 from dotenv import load_dotenv
 import os
 
@@ -33,11 +33,6 @@ stats = {
 stats_lock = Lock()
 start_time = time()
 console = Console()
-
-
-def toggle_pause():
-    with stats_lock:
-        stats['is_paused'] = not stats['is_paused']
 
 
 strings = ascii_letters + digits
@@ -60,7 +55,6 @@ proxies = {
     "https": PROXY
 }
 
-
 try:
     ocr = DdddOcr(use_gpu=True, show_ad=False, import_onnx_path=f"{OCR_FOLDER}/4399ocr.onnx",
                   charsets_path=f"{OCR_FOLDER}/4399ocr.json")
@@ -72,6 +66,10 @@ except FileNotFoundError as e:
 
 def randstr(chars, length):
     return ''.join(sample(chars, length))
+
+def toggle_pause():
+    with stats_lock:
+        stats['is_paused'] = not stats['is_paused']
 
 def get_elapsed_time():
     elapsed = time() - start_time
@@ -169,7 +167,7 @@ def make_header() -> Panel:
         pause_text = Text(" [ PAUSED ]", style="bold yellow")
         title.append(pause_text)
 
-    return Panel(title, box=rich.box.HEAVY, border_style="blue")
+    return Panel(title, box=HEAVY, border_style="blue")
 
 def make_stats_panel() -> Panel:
     with stats_lock:
@@ -213,7 +211,7 @@ def make_failure_panel() -> Panel:
         failure = stats['failure']
         failure_details = stats['failure_details']
 
-    reasons_table = Table(show_edge=True, title_style="bold red", expand=True, box=rich.box.ROUNDED)
+    reasons_table = Table(show_edge=True, title_style="bold red", expand=True, box=ROUNDED)
     reasons_table.add_column("原因", style="red", no_wrap=True, ratio=60)
     reasons_table.add_column("数量", style="cyan", ratio=20, justify="center")
     reasons_table.add_column("占比", style="magenta", ratio=20, justify="center")
@@ -246,7 +244,7 @@ def generate_layout() -> Layout:
     )
     return layout
 
-if __name__ == "__main__":
+def main():
     requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
     
     keyboard.on_press_key("space", lambda _: toggle_pause())
@@ -267,3 +265,7 @@ if __name__ == "__main__":
     except Exception as e:
         console.print(f"\n[bold red]发生意外错误: {e}[/bold red]")
         console.print_exception()
+
+
+if __name__ == "__main__":
+    main()
