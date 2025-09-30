@@ -188,7 +188,8 @@ def worker():
             stats['total'] += 1
             if result == '生产成功':
                 stats['success'] += 1
-                stats['success_times'].append(time())
+                current_active_time = time() - start_time - stats['total_paused_time']
+                stats['success_times'].append(current_active_time)
             else:
                 stats['failure'] += 1
                 stats['failure_details'][result] += 1
@@ -213,8 +214,17 @@ def make_stats_panel() -> Panel:
         success_times = stats['success_times']
         success_rate = (success / total * 100) if total > 0 else 0
 
-        current_time = time()
-        while success_times and success_times[0] < current_time - 60:
+        is_paused = stats['is_paused']
+        pause_start_time = stats['pause_start_time']
+        total_paused_time = stats['total_paused_time']
+
+        current_paused_duration = 0
+        if is_paused:
+            current_paused_duration = time() - pause_start_time
+        
+        current_active_time = time() - start_time - total_paused_time - current_paused_duration
+
+        while success_times and success_times[0] < current_active_time - 60:
             success_times.popleft()
         spm = len(success_times)
 
