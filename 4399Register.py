@@ -22,17 +22,16 @@ import os
 
 load_dotenv()
 
-stats = {
-    'total': 0,
-    'success': 0,
-    'failure': 0,
-    'failure_details': Counter(),
+counts = Counter()
+failure_details = Counter()
+
+shared_data = {
     'success_times': deque(),
     'is_paused': False,
     'pause_start_time': 0,
     'total_paused_time': 0
 }
-stats_lock = Lock()
+shared_data_lock = Lock()
 start_time = time()
 console = Console()
 
@@ -79,19 +78,19 @@ def handle_input():
         sleep(0.1)
 
 def toggle_pause():
-    with stats_lock:
-        stats['is_paused'] = not stats['is_paused']
-        if stats['is_paused']:
-            stats['pause_start_time'] = time()
+    with shared_data_lock:
+        shared_data['is_paused'] = not shared_data['is_paused']
+        if shared_data['is_paused']:
+            shared_data['pause_start_time'] = time()
         else:
-            paused_duration = time() - stats['pause_start_time']
-            stats['total_paused_time'] += paused_duration
+            paused_duration = time() - shared_data['pause_start_time']
+            shared_data['total_paused_time'] += paused_duration
 
 def get_elapsed_time():
-    with stats_lock:
-        total_paused_time = stats['total_paused_time']
-        is_paused = stats['is_paused']
-        pause_start_time = stats['pause_start_time']
+    with shared_data_lock:
+        total_paused_time = shared_data['total_paused_time']
+        is_paused = shared_data['is_paused']
+        pause_start_time = shared_data['pause_start_time']
 
     current_paused_duration = 0
     if is_paused:
@@ -171,8 +170,8 @@ def register_4399(usr, pwd, count=1):
 
 def worker():
     while True:
-        with stats_lock:
-            is_paused = stats['is_paused']
+        with shared_data_lock:
+            is_paused = shared_data['is_paused']
         
         if is_paused:
             sleep(0.5)
@@ -183,21 +182,22 @@ def worker():
         
         result = register_4399(usr, pwd)
         
-        with stats_lock:
-            if stats['is_paused']:
+        with shared_data_lock:
+            if shared_data['is_paused']:
                 continue
-            stats['total'] += 1
+            
+            counts['total'] += 1
             if result == '生产成功':
-                stats['success'] += 1
-                current_active_time = time() - start_time - stats['total_paused_time']
-                stats['success_times'].append(current_active_time)
+                counts['success'] += 1
+                current_active_time = time() - start_time - shared_data['total_paused_time']
+                shared_data['success_times'].append(current_active_time)
             else:
-                stats['failure'] += 1
-                stats['failure_details'][result] += 1
+                counts['failure'] += 1
+                failure_details[result] += 1
 
 def make_header() -> Panel:
-    with stats_lock:
-        is_paused = stats['is_paused']
+    with shared_data_lock:
+        is_paused = shared_data['is_paused']
 
     title = Text("Pineapple Register", justify="center", style="bold blue")
     
@@ -208,26 +208,27 @@ def make_header() -> Panel:
     return Panel(title, box=HEAVY, border_style="blue")
 
 def make_stats_panel() -> Panel:
-    with stats_lock:
-        total = stats['total']
-        success = stats['success']
-        failure = stats['failure']
-        success_times = stats['success_times']
-        success_rate = (success / total * 100) if total > 0 else 0
+    total = counts['total']
+    success = counts['success']
+    failure = counts['failure']
+    
+    with shared_data_lock:
+        success_times_copy = shared_data['success_times'].copy()
+        is_paused = shared_data['is_paused']
+        pause_start_time = shared_data['pause_start_time']
+        total_paused_time = shared_data['total_paused_time']
 
-        is_paused = stats['is_paused']
-        pause_start_time = stats['pause_start_time']
-        total_paused_time = stats['total_paused_time']
+    success_rate = (success / total * 100) if total > 0 else 0
 
-        current_paused_duration = 0
-        if is_paused:
-            current_paused_duration = time() - pause_start_time
-        
-        current_active_time = time() - start_time - total_paused_time - current_paused_duration
+    current_paused_duration = 0
+    if is_paused:
+        current_paused_duration = time() - pause_start_time
+    
+    current_active_time = time() - start_time - total_paused_time - current_paused_duration
 
-        while success_times and success_times[0] < current_active_time - 60:
-            success_times.popleft()
-        spm = len(success_times)
+    while success_times_copy and success_times_copy[0] < current_active_time - 60:
+        success_times_copy.popleft()
+    spm = len(success_times_copy)
 
     stats_table = Table.grid(expand=True, padding=(0, 1))
     stats_table.add_column(style="cyan", justify="right")
@@ -254,9 +255,8 @@ def make_stats_panel() -> Panel:
     return Panel(content_group, title="[bold yellow]核心统计[/bold yellow]", border_style="yellow")
 
 def make_failure_panel() -> Panel:
-    with stats_lock:
-        failure = stats['failure']
-        failure_details = stats['failure_details']
+    failure = counts['failure']
+    sorted_failures = failure_details.most_common(10)
 
     reasons_table = Table(show_edge=True, title_style="bold red", expand=True, box=ROUNDED)
     reasons_table.add_column("原因", style="red", no_wrap=True, ratio=60)
@@ -264,7 +264,6 @@ def make_failure_panel() -> Panel:
     reasons_table.add_column("占比", style="magenta", ratio=20, justify="center")
 
     if failure > 0:
-        sorted_failures = failure_details.most_common(10)
         for reason, count in sorted_failures:
             percentage = (count / failure * 100)
             reasons_table.add_row(reason, str(count), f"{percentage:.1f}%")
@@ -305,8 +304,8 @@ def main():
         with Live(generate_layout(), screen=True, redirect_stderr=False, refresh_per_second=4) as live:
             was_paused = False
             while True:
-                with stats_lock:
-                    is_paused = stats['is_paused']
+                with shared_data_lock:
+                    is_paused = shared_data['is_paused']
                 
                 if not is_paused or (is_paused and not was_paused):
                     live.update(generate_layout())
