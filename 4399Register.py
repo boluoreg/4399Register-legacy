@@ -153,6 +153,7 @@ def register_4399(usr, pwd, count=1):
         elif '您的身份证异常或错误' in response_text: result = '您的菠萝证异常或错误'
         elif '姓名身份证不匹配' in response_text: result = '菠萝名与菠萝号不匹配'
         elif '用户名包含敏感字符' in response_text: result = '菠萝名包含敏感字符'
+        elif '身份证实名账号数量超过时段限制' in response_text: result = '菠萝证种植数量超过时段限制'
         elif '用户名已被注册' in response_text: result = '该菠萝已被生产'
         else:
             if status_code == 200:
