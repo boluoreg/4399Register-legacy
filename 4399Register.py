@@ -43,7 +43,8 @@ PROXY = os.getenv('PROXY')
 SFZ_FILE = os.getenv('SFZ_FILE')
 OCR_FOLDER = os.getenv('OCR_FOLDER')
 SYMBOL = os.getenv('SYMBOL')
-THREADS = os.getenv('THREADS')
+THREADS = int(os.getenv('THREADS'))
+CAPTCHA_RETRY = int(os.getenv('CAPTCHA_RETRY'))
 
 
 headers = {
@@ -116,7 +117,7 @@ def register_4399(usr, pwd, count=1):
             with open('accounts.txt', 'a') as f:
                 f.write(f'{usr}:{pwd}\n')
         elif '验证码错误' in response:
-            if count >= 5:
+            if count >= CAPTCHA_RETRY:
                 result = "菠萝码超时"
             else:
                 return register_4399(usr, pwd, count + 1)
@@ -249,9 +250,7 @@ def main():
     
     keyboard.on_press_key("space", lambda _: toggle_pause())
 
-    num_threads = int(THREADS)
-
-    for i in range(num_threads):
+    for i in range(THREADS):
         thread = Thread(target=worker, daemon=True)
         thread.start()
 
