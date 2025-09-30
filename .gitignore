@@ -1,0 +1,8 @@
+/__pycache__/
+/accounts/
+
+/*.txt
+/split_accounts.py
+/*.bak  
+.env
+error200.html
